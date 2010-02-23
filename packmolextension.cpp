@@ -69,11 +69,17 @@ namespace Avogadro {
   QUndoCommand* PackmolExtension::performAction(QAction *action, GLWidget *widget)
   {
     if (!m_dialog) {
-      m_dialog = new PackmolDialog();    
+      m_dialog = new PackmolDialog();
+     connect(m_dialog, SIGNAL(resultReady(Molecule*)), this, SLOT(resultsReady(Molecule*)));
     }
 
     m_dialog->show();
     return 0;
+  }
+      
+  void PackmolExtension::resultsReady(Molecule *molecule)
+  {
+    emit moleculeChanged(molecule, NewWindow);
   }
 
 } // end namespace Avogadro

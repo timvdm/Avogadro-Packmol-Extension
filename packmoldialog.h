@@ -27,12 +27,15 @@
 
 #include <QDialog>
 #include <QProcess>
+#include <QHash>
 
 #include "ui_packmoldialog.h"
 
 
 namespace Avogadro
 {
+
+  class Molecule;
 
   class PackmolDialog : public QDialog
   {
@@ -44,6 +47,7 @@ namespace Avogadro
 
   private:
     Ui::PackmolDialog ui;
+    QHash<QString,QString> m_fileLookup; // translate short input filename to full path filenames
     QProcess *m_process;
 
     double solvCalcVolume();
@@ -62,8 +66,8 @@ namespace Avogadro
     void updateStandardOutput();
     void processFinished(int,QProcess::ExitStatus);
 
-  //signals:
-  //  void calculate();
+  signals:
+    void resultReady(Molecule*);
   };
 
 } // End namespace Avogadro

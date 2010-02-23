@@ -55,6 +55,9 @@ namespace Avogadro {
 
       void setMolecule(Molecule *molecule);
 
+    public slots:
+      void resultsReady(Molecule*);
+
     private:
       QList<QAction *> m_actions;
       Molecule *m_molecule;

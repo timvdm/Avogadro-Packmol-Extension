@@ -38,6 +38,8 @@
 #include <QDesktopServices>
 #include <QDebug>
 
+// FIXME: replace "/" with correct code
+
 namespace Avogadro {
 
   struct Volume
@@ -87,12 +89,22 @@ namespace Avogadro {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Molecule"));
     ui.solvSoluteFilename->setText(fileName);
     solvUpdateVolume();
+
+    // keep track of files
+    QFileInfo fileInfo(fileName);
+    QString fileNameInInputFile = fileInfo.baseName() + "." + ui.filetype->currentText();
+    m_fileLookup[fileNameInInputFile] = fileName;
   }
  
   void PackmolDialog::solvSolventBrowseClicked()
   {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Molecule"));
     ui.solvSolventFilename->setText(fileName);
+    
+    // keep track of files
+    QFileInfo fileInfo(fileName);
+    QString fileNameInInputFile = fileInfo.baseName() + "." + ui.filetype->currentText();
+    m_fileLookup[fileNameInInputFile] = fileName;
   }
   
   void PackmolDialog::solvAdjustShapeClicked(int state)
@@ -180,6 +192,8 @@ namespace Avogadro {
         ui.solvCenterZ->setValue(center.z());
         ui.solvRadius->setValue(maxR + spacing);
       }
+      
+      delete molecule;
     }
   }
     
@@ -256,6 +270,7 @@ namespace Avogadro {
       QFileInfo soluteFileInfo(ui.solvSoluteFilename->text());
       text += "structure " + soluteFileInfo.baseName() + "." + filetype + "\n";
       text += "  number " + QString::number(ui.solvSoluteNumber->value()) + "\n";
+      text += "  fixed 0. 0. 0. 0. 0. 0.\n";
       text += "end structure\n";
       text += "\n";
     }
@@ -286,32 +301,78 @@ namespace Avogadro {
     
   void PackmolDialog::runButtonClicked()
   {
+    /*
     if (m_process) {
       m_process->deleteLater();
       ui.tabWidget->setCurrentIndex(2); // change to output mode
       return;
     }
+    */
     QString program = "/usr/local/bin/packmol"; // FIXME: should be option
     
     ui.runButton->setEnabled(false);
     ui.abortButton->setEnabled(true);
 
+    QString tmpdir = QDesktopServices::storageLocation(QDesktopServices::TempLocation);
+
+    // Write the input file
+    QFile inputFile(tmpdir + "/input.inp");
+    if (!inputFile.open(QIODevice::WriteOnly | QIODevice::Text))
+      return;
+    QTextStream stream(&inputFile);
+    stream << ui.textEdit->toPlainText().toAscii();
+    inputFile.close();
+
+    // Make sure we know where all files are
+    QStringList files;
+    QStringList lines = ui.textEdit->toPlainText().split("\n");
+    foreach (const QString &line, lines) {
+      if (line.contains("end"))
+        continue;
+      if (!line.contains("structure"))
+        continue;
+
+      QStringList tokens = line.split(QRegExp("\\s+"));
+      if (tokens.length() != 2)
+        continue;
+
+      files.append(tokens[1]);
+    }
+
+    foreach (const QString &file, files) {
+      if (!m_fileLookup.contains(file)) {
+        QMessageBox::StandardButton result = QMessageBox::question(this, tr("File not found"), 
+            tr("File %1 not found. Look forit now?").arg(file), QMessageBox::Yes | QMessageBox::No);
+        if (result == QMessageBox::No)
+          return;
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Open Molecule"));
+        m_fileLookup[file] = fileName;
+      }
+    }
+
+    // Now we know where all files are, move/convert them to the temp location
+    foreach (const QString &shortFileName, m_fileLookup.keys()) {
+      QString fullFileName = m_fileLookup.value(shortFileName);
+      QFileInfo fileInfo(fullFileName);
+
+      QString tmpFile = tmpdir + "/" + fileInfo.baseName() + "." + ui.filetype->currentText();
+
+      Molecule *molecule = MoleculeFile::readMolecule(fullFileName);
+      if (!molecule)
+        return;
+      MoleculeFile::writeMolecule(molecule, tmpFile);
+      delete molecule;
+    }
+
+    // Create & setup the process
     m_process = new QProcess(this);
     connect(m_process, SIGNAL(finished(int,QProcess::ExitStatus)), 
         this, SLOT(processFinished(int,QProcess::ExitStatus)));
     connect(m_process, SIGNAL(readyReadStandardOutput()), this, SLOT(updateStandardOutput()));
 
-    QString tmpdir = QDesktopServices::storageLocation(QDesktopServices::TempLocation);
-
-    QFile inputFile(tmpdir + "/input.inp");
-    if (!inputFile.open(QIODevice::WriteOnly | QIODevice::Text))
-      return;
-
-    QTextStream stream(&inputFile);
-    stream << ui.textEdit->toPlainText().toAscii();
-    inputFile.close();
-
     m_process->setStandardInputFile(tmpdir + "/input.inp");
+    m_process->setWorkingDirectory(tmpdir);
+
     m_process->start(program);
 
     ui.tabWidget->setCurrentIndex(2); // change to output mode
@@ -326,6 +387,13 @@ namespace Avogadro {
   {
     ui.runButton->setEnabled(true);
     ui.abortButton->setEnabled(false);
+    
+    QString tmpdir = QDesktopServices::storageLocation(QDesktopServices::TempLocation);
+    QString resultFileName = tmpdir + "/" + ui.output->text();
+
+    Molecule *molecule = MoleculeFile::readMolecule(resultFileName);
+    if (molecule)
+      emit resultReady(molecule); 
   }
 
 
