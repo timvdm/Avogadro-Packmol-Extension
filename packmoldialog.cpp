@@ -35,6 +35,7 @@
 #include <QMessageBox>
 #include <QFileInfo>
 #include <QCheckBox>
+#include <QDesktopServices>
 #include <QDebug>
 
 namespace Avogadro {
@@ -61,7 +62,7 @@ namespace Avogadro {
   };
 
   PackmolDialog::PackmolDialog(QWidget* parent, Qt::WindowFlags f)
-    : QDialog(parent, f)
+    : QDialog(parent, f), m_process(0)
   {
     ui.setupUi(this);
     new Highlighter(ui.textEdit->document());
@@ -73,6 +74,8 @@ namespace Avogadro {
     connect(ui.solvAdjustShape, SIGNAL(stateChanged(int)), this, SLOT(solvAdjustShapeClicked(int)));
     connect(ui.solvAddCounterIons, SIGNAL(stateChanged(int)), this, SLOT(solvAddCounterIonsClicked(int)));
     connect(ui.solvGuessSolventNumber, SIGNAL(stateChanged(int)), this, SLOT(solvGuessSolventNumberClicked(int)));
+    
+    connect(ui.runButton, SIGNAL(clicked()), this, SLOT(runButtonClicked()));
   }
 
   PackmolDialog::~PackmolDialog()
@@ -180,9 +183,30 @@ namespace Avogadro {
     }
   }
     
+  double PackmolDialog::solvCalcVolume()
+  {
+    if (ui.solvShape->currentIndex() == 0) {
+      // Box
+      double dx = ui.solvMaxX->value() - ui.solvMinX->value();
+      double dy = ui.solvMaxY->value() - ui.solvMinY->value();
+      double dz = ui.solvMaxZ->value() - ui.solvMinZ->value();
+      return dx * dy * dz;
+    } else {
+      // Sphere
+      double r = ui.solvRadius->value();
+      return 4.0 / 3.0 * M_PI * r * r * r;
+    }
+  }
+    
   void PackmolDialog::solvUpdateSoluteNumber()
   {
-  
+    if (!ui.solvGuessSolventNumber->isChecked())
+      return;
+
+    double volume = solvCalcVolume();
+    int number = 0.09 * volume + 19.75; // correlation
+
+    ui.solvSolventNumber->setValue(number);  
   }
 
   void PackmolDialog::solvAddCounterIonsClicked(int state)
@@ -200,6 +224,8 @@ namespace Avogadro {
         ui.solvSolventNumber->setEnabled(false);
         break;
     }
+  
+    solvUpdateSoluteNumber();
   }
 
 
@@ -256,6 +282,50 @@ namespace Avogadro {
     text += "\n";
  
     ui.textEdit->setText(text);
+  }
+    
+  void PackmolDialog::runButtonClicked()
+  {
+    if (m_process) {
+      m_process->deleteLater();
+      ui.tabWidget->setCurrentIndex(2); // change to output mode
+      return;
+    }
+    QString program = "/usr/local/bin/packmol"; // FIXME: should be option
+    
+    ui.runButton->setEnabled(false);
+    ui.abortButton->setEnabled(true);
+
+    m_process = new QProcess(this);
+    connect(m_process, SIGNAL(finished(int,QProcess::ExitStatus)), 
+        this, SLOT(processFinished(int,QProcess::ExitStatus)));
+    connect(m_process, SIGNAL(readyReadStandardOutput()), this, SLOT(updateStandardOutput()));
+
+    QString tmpdir = QDesktopServices::storageLocation(QDesktopServices::TempLocation);
+
+    QFile inputFile(tmpdir + "/input.inp");
+    if (!inputFile.open(QIODevice::WriteOnly | QIODevice::Text))
+      return;
+
+    QTextStream stream(&inputFile);
+    stream << ui.textEdit->toPlainText().toAscii();
+    inputFile.close();
+
+    m_process->setStandardInputFile(tmpdir + "/input.inp");
+    m_process->start(program);
+
+    ui.tabWidget->setCurrentIndex(2); // change to output mode
+  }
+  
+  void PackmolDialog::updateStandardOutput()
+  {
+    ui.outputEdit->append(m_process->read(10000));
+  }
+  
+  void PackmolDialog::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
+  {
+    ui.runButton->setEnabled(true);
+    ui.abortButton->setEnabled(false);
   }
 
 

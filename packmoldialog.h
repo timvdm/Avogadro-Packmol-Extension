@@ -26,11 +26,14 @@
 #define PACKMOLDIALOG_H
 
 #include <QDialog>
+#include <QProcess>
 
 #include "ui_packmoldialog.h"
 
+
 namespace Avogadro
 {
+
   class PackmolDialog : public QDialog
   {
     Q_OBJECT
@@ -41,7 +44,9 @@ namespace Avogadro
 
   private:
     Ui::PackmolDialog ui;
+    QProcess *m_process;
 
+    double solvCalcVolume();
     void solvUpdateVolume();
     void solvUpdateSoluteNumber();
 
@@ -52,6 +57,10 @@ namespace Avogadro
     void solvAdjustShapeClicked(int);
     void solvAddCounterIonsClicked(int);
     void solvGuessSolventNumberClicked(int);
+
+    void runButtonClicked();
+    void updateStandardOutput();
+    void processFinished(int,QProcess::ExitStatus);
 
   //signals:
   //  void calculate();
