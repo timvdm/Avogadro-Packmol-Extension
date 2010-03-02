@@ -25,10 +25,15 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_9">
        <item>
-        <widget class="QComboBox" name="comboBox_2">
+        <widget class="QComboBox" name="wizardComboBox">
          <item>
           <property name="text">
            <string>Solvate Molecule</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Lipid bilayer</string>
           </property>
          </item>
         </widget>
@@ -36,7 +41,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="page_3">
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -78,6 +83,9 @@
                     </item>
                     <item row="0" column="1">
                      <widget class="QDoubleSpinBox" name="solvMinX">
+                      <property name="suffix">
+                       <string> A</string>
+                      </property>
                       <property name="decimals">
                        <number>1</number>
                       </property>
@@ -91,6 +99,9 @@
                     </item>
                     <item row="0" column="2">
                      <widget class="QDoubleSpinBox" name="solvMinY">
+                      <property name="suffix">
+                       <string> A</string>
+                      </property>
                       <property name="decimals">
                        <number>1</number>
                       </property>
@@ -104,6 +115,9 @@
                     </item>
                     <item row="0" column="3">
                      <widget class="QDoubleSpinBox" name="solvMinZ">
+                      <property name="suffix">
+                       <string> A</string>
+                      </property>
                       <property name="decimals">
                        <number>1</number>
                       </property>
@@ -124,6 +138,9 @@
                     </item>
                     <item row="1" column="1">
                      <widget class="QDoubleSpinBox" name="solvMaxX">
+                      <property name="suffix">
+                       <string> A</string>
+                      </property>
                       <property name="decimals">
                        <number>1</number>
                       </property>
@@ -140,6 +157,9 @@
                     </item>
                     <item row="1" column="2">
                      <widget class="QDoubleSpinBox" name="solvMaxY">
+                      <property name="suffix">
+                       <string> A</string>
+                      </property>
                       <property name="decimals">
                        <number>1</number>
                       </property>
@@ -156,6 +176,9 @@
                     </item>
                     <item row="1" column="3">
                      <widget class="QDoubleSpinBox" name="solvMaxZ">
+                      <property name="suffix">
+                       <string> A</string>
+                      </property>
                       <property name="decimals">
                        <number>1</number>
                       </property>
@@ -262,6 +285,9 @@
                  <widget class="QDoubleSpinBox" name="solvSpacing">
                   <property name="enabled">
                    <bool>false</bool>
+                  </property>
+                  <property name="suffix">
+                   <string> A</string>
                   </property>
                   <property name="value">
                    <double>5.000000000000000</double>
@@ -419,11 +445,31 @@
                </layout>
               </item>
               <item>
-               <widget class="QCheckBox" name="solvGuessSolventNumber">
-                <property name="text">
-                 <string>Guess the number of molecules required to fill the volume</string>
-                </property>
-               </widget>
+               <layout class="QHBoxLayout" name="horizontalLayout_10">
+                <item>
+                 <widget class="QCheckBox" name="solvGuessSolventNumber">
+                  <property name="text">
+                   <string>Guess the number of molecules using density:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="solvDensity">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="suffix">
+                   <string> g/ml</string>
+                  </property>
+                  <property name="maximum">
+                   <double>999.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>1.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
              </layout>
             </widget>
@@ -437,7 +483,126 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="page_4"/>
+         <widget class="QWidget" name="page_4">
+          <layout class="QVBoxLayout" name="verticalLayout_13">
+           <item>
+            <widget class="QGroupBox" name="groupBox_6">
+             <property name="title">
+              <string>Dimensions</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_11">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_7">
+                <item>
+                 <widget class="QLabel" name="label_19">
+                  <property name="text">
+                   <string>Box</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="bilayerDimX">
+                  <property name="suffix">
+                   <string> A</string>
+                  </property>
+                  <property name="maximum">
+                   <double>1000.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>40.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="bilayerDimY">
+                  <property name="suffix">
+                   <string> A</string>
+                  </property>
+                  <property name="maximum">
+                   <double>1000.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>40.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="bilayerDimZ">
+                  <property name="suffix">
+                   <string> A</string>
+                  </property>
+                  <property name="maximum">
+                   <double>1000.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>40.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_18">
+                <property name="text">
+                 <string>The lipid bilayer lies in the xy-plane</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_7">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="title">
+              <string>Structures</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_12">
+              <item>
+               <widget class="QTableView" name="bilayerTableView"/>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_9">
+                <item>
+                 <widget class="QPushButton" name="bilayerNew">
+                  <property name="text">
+                   <string>New</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="bilayerRemove">
+                  <property name="text">
+                   <string>Remove</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="bilayerGuessNumber">
+                  <property name="text">
+                   <string>Guess number of molecules</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="bilayerGenerate">
+             <property name="text">
+              <string>Generate input file</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
       </layout>
@@ -459,6 +624,7 @@
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Courier 10 Pitch'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;# header&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;tolerance 2.0&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;filetype pdb&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;output result.pdb&lt;/p&gt;
@@ -519,14 +685,50 @@ p, li { white-space: pre-wrap; }
           <string>Basic</string>
          </property>
          <layout class="QFormLayout" name="formLayout">
+          <property name="fieldGrowthPolicy">
+           <enum>QFormLayout::ExpandingFieldsGrow</enum>
+          </property>
           <item row="0" column="0">
+           <widget class="QLabel" name="label_14">
+            <property name="text">
+             <string>packmol executable</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <item>
+             <widget class="QLineEdit" name="packmolExecutable"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="solvSoluteBrowse_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>29</width>
+                <height>29</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
            <widget class="QLabel" name="label_10">
             <property name="text">
              <string>tolerance</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
+          <item row="1" column="1">
            <widget class="QDoubleSpinBox" name="tolerance">
             <property name="singleStep">
              <double>0.100000000000000</double>
@@ -536,14 +738,14 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
+          <item row="2" column="0">
            <widget class="QLabel" name="label_12">
             <property name="text">
              <string>filetype</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
+          <item row="2" column="1">
            <widget class="QComboBox" name="filetype">
             <item>
              <property name="text">
@@ -557,14 +759,14 @@ p, li { white-space: pre-wrap; }
             </item>
            </widget>
           </item>
-          <item row="2" column="0">
+          <item row="3" column="0">
            <widget class="QLabel" name="label_11">
             <property name="text">
              <string>output</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
+          <item row="3" column="1">
            <widget class="QLineEdit" name="output">
             <property name="text">
              <string>result.pdb</string>
@@ -581,14 +783,68 @@ p, li { white-space: pre-wrap; }
          </property>
          <layout class="QFormLayout" name="formLayout_2">
           <item row="0" column="0">
+           <widget class="QLabel" name="label_15">
+            <property name="text">
+             <string>seed</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="seed"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_16">
+            <property name="text">
+             <string>maxit</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="maxit"/>
+          </item>
+          <item row="2" column="0">
            <widget class="QLabel" name="label_13">
             <property name="text">
              <string>nloop</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
-           <widget class="QSpinBox" name="spinBox_3"/>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="nloop"/>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_17">
+            <property name="text">
+             <string>writeout</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="writeout"/>
+          </item>
+          <item row="4" column="0" colspan="2">
+           <widget class="QCheckBox" name="addAmberTer">
+            <property name="text">
+             <string>add_amber_ter</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0" colspan="2">
+           <widget class="QCheckBox" name="addBoxSides">
+            <property name="text">
+             <string>add_box_sides</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0" colspan="2">
+           <widget class="QCheckBox" name="randomInitialPoint">
+            <property name="text">
+             <string>randominitialpoint</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -643,7 +899,7 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_3">
+        <widget class="QPushButton" name="visitWebsite">
          <property name="text">
           <string>Visit Website</string>
          </property>
@@ -683,6 +939,22 @@ p, li { white-space: pre-wrap; }
     <hint type="destinationlabel">
      <x>354</x>
      <y>163</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>wizardComboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>stackedWidget</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>379</x>
+     <y>53</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>379</x>
+     <y>317</y>
     </hint>
    </hints>
   </connection>

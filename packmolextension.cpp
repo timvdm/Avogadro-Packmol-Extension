@@ -40,11 +40,12 @@ namespace Avogadro {
 
   PackmolExtension::PackmolExtension(QObject *parent) : Extension(parent), 
       m_molecule(0), m_dialog(0)
-  {
-    
+  {  
     QAction *action = new QAction(this);
     action->setText(tr("Packmol"));
     m_actions.append(action);
+
+    createDialog();
   }
 
   PackmolExtension::~PackmolExtension()
@@ -68,19 +69,33 @@ namespace Avogadro {
 
   QUndoCommand* PackmolExtension::performAction(QAction *action, GLWidget *widget)
   {
-    if (!m_dialog) {
-      m_dialog = new PackmolDialog();
-     connect(m_dialog, SIGNAL(resultReady(Molecule*)), this, SLOT(resultsReady(Molecule*)));
-    }
-
     m_dialog->show();
     return 0;
+  }
+
+  void PackmolExtension::createDialog()
+  {
+    if (!m_dialog) {
+      m_dialog = new PackmolDialog(qobject_cast<QWidget *>(parent()));
+      connect(m_dialog, SIGNAL(resultReady(Molecule*)), this, SLOT(resultsReady(Molecule*)));
+    }
   }
       
   void PackmolExtension::resultsReady(Molecule *molecule)
   {
     emit moleculeChanged(molecule, NewWindow);
   }
+
+  void PackmolExtension::writeSettings(QSettings &settings) const
+  {
+    m_dialog->writeSettings(settings);
+  }
+
+  void PackmolExtension::readSettings(QSettings &settings)
+  {
+    m_dialog->readSettings(settings);
+  }
+
 
 } // end namespace Avogadro
 

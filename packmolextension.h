@@ -54,11 +54,16 @@ namespace Avogadro {
       //@}
 
       void setMolecule(Molecule *molecule);
+    
+      void writeSettings(QSettings &settings) const;
+      void readSettings(QSettings &settings);
 
     public slots:
       void resultsReady(Molecule*);
 
     private:
+      void createDialog();
+
       QList<QAction *> m_actions;
       Molecule *m_molecule;
       PackmolDialog *m_dialog;

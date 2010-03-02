@@ -28,6 +28,7 @@
 #include <QDialog>
 #include <QProcess>
 #include <QHash>
+#include <QSettings>
 
 #include "ui_packmoldialog.h"
 
@@ -36,6 +37,7 @@ namespace Avogadro
 {
 
   class Molecule;
+  class StructuresModel;
 
   class PackmolDialog : public QDialog
   {
@@ -45,14 +47,24 @@ namespace Avogadro
     PackmolDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
     ~PackmolDialog();
 
+    void writeSettings(QSettings &settings) const;
+    void readSettings(QSettings &settings);
+
   private:
     Ui::PackmolDialog ui;
     QHash<QString,QString> m_fileLookup; // translate short input filename to full path filenames
     QProcess *m_process;
+    StructuresModel *m_model;
 
     double solvCalcVolume();
     void solvUpdateVolume();
     void solvUpdateSoluteNumber();
+    QString solvContraintString();
+    QString headerString();
+    void createSodiumFile();
+    void createChlorineFile();
+
+    double bilayerCalculateL();
 
   public slots:
     void solvSoluteBrowseClicked();
@@ -61,8 +73,16 @@ namespace Avogadro
     void solvAdjustShapeClicked(int);
     void solvAddCounterIonsClicked(int);
     void solvGuessSolventNumberClicked(int);
+    void solvVolumeChanged(double);
+
+    void bilayerNewClicked();
+    void bilayerRemoveClicked();
+    void bilayerGenerateClicked();
+    void bilayerUpdateNumber();
 
     void runButtonClicked();
+    void abortButtonClicked();
+    void visitWebsite();
     void updateStandardOutput();
     void processFinished(int,QProcess::ExitStatus);
 

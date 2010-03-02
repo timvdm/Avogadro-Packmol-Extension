@@ -44,18 +44,10 @@ namespace Avogadro {
         QRegExp pattern;
         QTextCharFormat format;
       };
+      
       QVector<HighlightingRule> highlightingRules;
-
-      QRegExp commentStartExpression;
-      QRegExp commentEndExpression;
-
       QTextCharFormat keywordFormat;
-      QTextCharFormat promptFormat;
-      QTextCharFormat classFormat;
       QTextCharFormat singleLineCommentFormat;
-      QTextCharFormat multiLineCommentFormat;
-      QTextCharFormat quotationFormat;
-      QTextCharFormat functionFormat;
   };
 
 } // namespace

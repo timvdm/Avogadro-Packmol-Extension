@@ -26,21 +26,6 @@ namespace Avogadro {
   {
     HighlightingRule rule;
 
-    /*
-    promptFormat.setForeground(Qt::blue);
-    promptFormat.setFontWeight(QFont::Bold);
-    QStringList promptPatterns;
-    promptPatterns << "#*";
-
-    foreach (const QString &pattern, promptPatterns) {
-        rule.pattern = QRegExp(pattern);
-        rule.format = promptFormat;
-        highlightingRules.append(rule);
-    }
-    */
-
-  
-    
     keywordFormat.setForeground(Qt::darkGreen);
     keywordFormat.setFontWeight(QFont::Bold);
     QStringList keywordPatterns;
@@ -52,7 +37,10 @@ namespace Avogadro {
                     << "\\bsphere\\b" << "\\boutside\\b" << "\\batoms\\b"
                     << "\\bcenter\\b" << "\\bfixed\\b" << "\\bellipsoid\\b"
                     << "\\bplane\\b" << "\\bover\\b" << "\\bbelow\\b"
-                    << "\\bcylinder\\b";
+                    << "\\bcylinder\\b" << "\\badd_amber_ter\\b"
+                    << "\\badd_box_sides\\b" << "\\brandominitialpoint\\b"
+                    << "\\bseed\\b" << "\\bmaxit\\b" << "\\bnloop\\b"
+                    << "\\bwriteout\\b";
 
     foreach (const QString &pattern, keywordPatterns) {
         rule.pattern = QRegExp(pattern);
@@ -60,34 +48,11 @@ namespace Avogadro {
         highlightingRules.append(rule);
     }
 
-    /*
-    classFormat.setFontWeight(QFont::Bold);
-    classFormat.setForeground(Qt::darkMagenta);
-    rule.pattern = QRegExp("\\bQ[A-Za-z]+\\b");
-    rule.format = classFormat;
-    highlightingRules.append(rule);
-
-    singleLineCommentFormat.setForeground(Qt::red);
+    singleLineCommentFormat.setForeground(Qt::blue);
+    singleLineCommentFormat.setFontWeight(QFont::Bold);
     rule.pattern = QRegExp("#[^\n]*");
     rule.format = singleLineCommentFormat;
     highlightingRules.append(rule);
-
-    multiLineCommentFormat.setForeground(Qt::red);
-
-    quotationFormat.setForeground(Qt::darkGreen);
-    rule.pattern = QRegExp("\".*\"");
-    rule.format = quotationFormat;
-    highlightingRules.append(rule);
-
-    functionFormat.setFontItalic(true);
-    functionFormat.setForeground(Qt::blue);
-    rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
-    rule.format = functionFormat;
-    highlightingRules.append(rule);
-
-    */
-    //commentStartExpression = QRegExp("/\\*");
-    //commentEndExpression = QRegExp("\\*/");
   }
 
   void Highlighter::highlightBlock(const QString &text)
@@ -101,28 +66,7 @@ namespace Avogadro {
             index = text.indexOf(expression, index + length);
         }
     }
-    setCurrentBlockState(0);
-    /*
-
-    int startIndex = 0;
-    if (previousBlockState() != 1)
-        startIndex = text.indexOf(commentStartExpression);
-
-    while (startIndex >= 0) {
-        int endIndex = text.indexOf(commentEndExpression, startIndex);
-        int commentLength;
-        if (endIndex == -1) {
-            setCurrentBlockState(1);
-            commentLength = text.length() - startIndex;
-        } else {
-            commentLength = endIndex - startIndex
-                            + commentEndExpression.matchedLength();
-        }
-        setFormat(startIndex, commentLength, multiLineCommentFormat);
-        startIndex = text.indexOf(commentStartExpression,
-                                                startIndex + commentLength);
-    }
-    */
+  //  setCurrentBlockState(0);
   }
 
 } // namespace
