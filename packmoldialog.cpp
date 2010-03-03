@@ -502,35 +502,45 @@ namespace Avogadro {
     double overlap = 3.0;
     foreach (const Structure &structure, m_model->structures()) {
       QFileInfo fileInfo(structure.fileName);
+      // zShift: make sure center of bilayer is at coordinates origin...
+      double zShift = - ui.bilayerDimZ->value() / 2.0;
+      double xMin = - ui.bilayerDimX->value() / 2.0;
+      double xMax = ui.bilayerDimX->value() / 2.0;
+      double yMin = - ui.bilayerDimY->value() / 2.0;
+      double yMax = ui.bilayerDimY->value() / 2.0;
       if (structure.type == Structure::Lipid) {
         double thickness = 0.5 * (ui.bilayerDimZ->value() - 2.0 * L);
         text += "structure " + fileInfo.baseName() + "." + filetype + "\n";
         text += "  number " + QString::number(structure.number) + "\n";
-        text += "  inside box 0.0 0.0 " + QString::number(thickness, 'f', 1) + " "
-                                        + QString::number(ui.bilayerDimX->value(), 'f', 1) + " "
-                                        + QString::number(ui.bilayerDimY->value(), 'f', 1) + " "
-                                        + QString::number(thickness + L + 1.0, 'f', 1) + "\n";
+        text += "  inside box " + QString::number(xMin, 'f', 1) + " "
+                                + QString::number(yMin, 'f', 1) + " "
+                                + QString::number(thickness + zShift, 'f', 1) + " "
+                                + QString::number(xMax, 'f', 1) + " "
+                                + QString::number(yMax, 'f', 1) + " "
+                                + QString::number(thickness + L + 1.0 + zShift, 'f', 1) + "\n";
         text += "  atoms # list polar head atoms here\n";
-        text += "    below plane 0.0 0.0 1.0 " + QString::number(thickness + overlap + 2.0, 'f', 1) + "\n";
+        text += "    below plane 0.0 0.0 1.0 " + QString::number(thickness + overlap + 2.0 + zShift, 'f', 1) + "\n";
         text += "  end atoms\n";
         text += "  atoms # list lipophilic tail atoms here\n";
-        text += "    over plane 0.0 0.0 1.0 " + QString::number(thickness + overlap + L - 3.0, 'f', 1) + "\n";
+        text += "    over plane 0.0 0.0 1.0 " + QString::number(thickness + overlap + L - 3.0 + zShift, 'f', 1) + "\n";
         text += "  end atoms\n";
         text += "end structure\n";
         text += "\n";
         text += "structure " + fileInfo.baseName() + "." + filetype + "\n";
         text += "  number " + QString::number(structure.number) + "\n";
-        text += "  inside box 0.0 0.0 " + QString::number(ui.bilayerDimZ->value() - thickness - L - 1.0, 'f', 1) + " "
-                                        + QString::number(ui.bilayerDimX->value(), 'f', 1) + " "
-                                        + QString::number(ui.bilayerDimY->value(), 'f', 1) + " "
-                                        + QString::number(ui.bilayerDimZ->value() - thickness, 'f', 1) + "\n";
+        text += "  inside box " + QString::number(xMin, 'f', 1) + " "
+                                + QString::number(yMin, 'f', 1) + " "
+                                + QString::number(ui.bilayerDimZ->value() - thickness - L - 1.0 + zShift, 'f', 1) + " "
+                                + QString::number(xMax, 'f', 1) + " "
+                                + QString::number(yMax, 'f', 1) + " "
+                                + QString::number(ui.bilayerDimZ->value() - thickness + zShift, 'f', 1) + "\n";
         text += "  atoms # list polar head atoms here\n";
         text += "    over plane 0.0 0.0 1.0 " + QString::number(ui.bilayerDimZ->value() - 
-            thickness - overlap - 2.0, 'f', 1) + "\n";
+            thickness - overlap - 2.0 + zShift, 'f', 1) + "\n";
         text += "  end atoms\n";
         text += "  atoms # list lipophilic tail atoms here\n";
         text += "    below plane 0.0 0.0 1.0 " + QString::number(ui.bilayerDimZ->value() - 
-            thickness - overlap - L + 3.0, 'f', 1) + "\n";
+            thickness - overlap - L + 3.0 + zShift, 'f', 1) + "\n";
         text += "  end atoms\n";
         text += "end structure\n";
         text += "\n";
@@ -540,17 +550,22 @@ namespace Avogadro {
         double thickness = 0.5 * (ui.bilayerDimZ->value() - 2.0 * L) + 3.0;
         text += "structure " + fileInfo.baseName() + "." + filetype + "\n";
         text += "  number " + QString::number(structure.number) + "\n";
-        text += "  inside box 0.0 0.0 0.0 " + QString::number(ui.bilayerDimX->value(), 'f', 1) + " "
-                                            + QString::number(ui.bilayerDimY->value(), 'f', 1) + " "
-                                            + QString::number(thickness, 'f', 1) + "\n";
+        text += "  inside box " + QString::number(xMin, 'f', 1) + " "
+                                + QString::number(yMin, 'f', 1) + " "
+                                + QString::number(zShift, 'f', 1) + " "
+                                + QString::number(xMax, 'f', 1) + " "
+                                + QString::number(yMax, 'f', 1) + " "
+                                + QString::number(thickness + zShift, 'f', 1) + "\n";
         text += "end structure\n";
         text += "\n";
         text += "structure " + fileInfo.baseName() + "." + filetype + "\n";
         text += "  number " + QString::number(structure.number) + "\n";
-        text += "  inside box 0.0 0.0 " + QString::number(ui.bilayerDimZ->value() - thickness, 'f', 1) + " "
-                                        + QString::number(ui.bilayerDimX->value(), 'f', 1) + " "
-                                        + QString::number(ui.bilayerDimY->value(), 'f', 1) + " "
-                                        + QString::number(ui.bilayerDimZ->value(), 'f', 1) + "\n";
+        text += "  inside box " + QString::number(xMin, 'f', 1) + " "
+                                + QString::number(yMin, 'f', 1) + " "
+                                + QString::number(ui.bilayerDimZ->value() - thickness + zShift, 'f', 1) + " "
+                                + QString::number(xMax, 'f', 1) + " "
+                                + QString::number(yMax, 'f', 1) + " "
+                                + QString::number(ui.bilayerDimZ->value() + zShift, 'f', 1) + "\n";
         text += "end structure\n";
         text += "\n";
       }
